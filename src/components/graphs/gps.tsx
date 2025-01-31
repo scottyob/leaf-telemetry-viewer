@@ -13,6 +13,7 @@ import {
     Filler,
 } from 'chart.js';
 import { useStore } from '@nanostores/react';
+import zoomPlugin from 'chartjs-plugin-zoom';
 
 ChartJS.register(
     CategoryScale,
@@ -23,6 +24,7 @@ ChartJS.register(
     Tooltip,
     Legend,
     Filler,
+    zoomPlugin,
 );
 
 
@@ -97,7 +99,22 @@ export default function GpsAltitudeGraph() {
                     title: {
                         text: 'GPS Altitude',
                         display: true,
+                    },
+                    zoom: {
+                        zoom: {
+                            drag: {
+                                enabled: true,
+                                backgroundColor: 'green',
+                            },
+                            mode: 'x',
+                            onZoomComplete: (event) => {
+                                const chart = event.chart;
+                                const {min: start, max: end} = chart.scales['x'];
+                                $recordSelection.set({start, end});
+                            }
+                        }
                     }
+
                 },
             }}
         />

@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { $telemetryRecords, $liftRecords, $recordSelection } from '../store/telemetryStore';
+import { $telemetryRecords, $liftRecords, $recordSelection, liftRecordsDataset } from '../store/telemetryStore';
 
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import zoomPlugin from 'chartjs-plugin-zoom';
+
 
 import {
     Chart as ChartJS,
@@ -25,6 +27,8 @@ ChartJS.register(
     Tooltip,
     Legend,
     annotationPlugin,
+    zoomPlugin
+
 );
 
 // No idea why 'mouseDown' is firing multiple times.
@@ -35,40 +39,13 @@ let lastMouseUp: number | null = null;
 const LiftTimeline: React.FC = () => {
     const telemetryRecords = useStore($telemetryRecords);
     const liftRecords = useStore($liftRecords);
+    const recordedSelection = useStore($recordSelection);
 
     const records = telemetryRecords.filter((record) => record.climbRate !== undefined);
 
-    const [p1, setP1] = useState<number | undefined>(undefined);
-    const [highlightedMin, setHighlightedMin] = useState<number | undefined>(undefined);
-    const [highlightedMax, setHighlightedMax] = useState<number | undefined>(undefined);
-
-    const annotations = liftRecords.map((lift) => {
-
-        // Lift.start and lift.end are in microseconds
-        // Work out the index of the start and end points
-        const startIndex = records.findIndex((record) => record.micros >= lift.start);
-        const endIndex = records.findIndex((record) => record.micros >= lift.end);
-
-        return {
-            type: 'box' as "box",
-            xMin: startIndex,
-            xMax: endIndex,
-            backgroundColor: 'rgba(255, 99, 132, 0.25)',
-            borderColor: 'transparent',
-
-        }
-    });
-
-    if (highlightedMax && highlightedMin) {
-        annotations.push({
-            type: "box" as "box",
-            xMin: highlightedMin,
-            xMax: highlightedMax,
-            backgroundColor: 'rgba(0, 255, 0, 0.4)',
-            borderColor: 'transparent',
-
-        });
-    }
+    // Single click on chart should clear zoom selection
+    let mouseStartX: number | null = null;
+    let mouseStartY: number | null = null;
 
     return (
         <div className='h-[100px]'>
@@ -76,67 +53,46 @@ const LiftTimeline: React.FC = () => {
                 width="100%"
                 height={30}
                 data={{
-                    labels: records.map((record) => record.micros),
                     datasets: [
                         {
-                            data: records.map((record) => ((record.climbRate as number) / 100)),
+                            data: records.map((record) => (
+                                { y: ((record.climbRate as number) / 100), x: record.micros }
+                            )),
                             pointRadius: 0,
                             borderColor: 'gray'
                         },
+                        {
+                            label: 'climbs',
+                            data: liftRecordsDataset(liftRecords),
+                            borderColor: 'red',
+                            borderWidth: 1,
+                            pointRadius: 0,
+                            fill: true,
+                            backgroundColor: 'rgba(255, 0, 0, 0.2)',
+                            yAxisID: "yClimb",
+                            stepped: true,
+                            showLine: false,
+
+                        }
+
                     ],
                 }}
 
                 options={{
                     maintainAspectRatio: false,
                     animation: false,
-                    events: ['mouseup', 'mousemove', 'mousedown'],
+                    events: ['mouseup', 'mousemove', 'mousedown', 'click'],
                     onHover: (event, chartElement, chart) => {
-                        if (event.type == 'mousedown' && !p1) {
-                            // Only work on a mouseDown after a second of the last mouse up
-                            if (lastMouseUp && Date.now() - lastMouseUp < 100) {
-                                return;
-                            }
-
-                            console.log('mousedown');
-                            setP1(chart.scales.x.getValueForPixel(event.x as number));
-                            setHighlightedMax(undefined);
-                            setHighlightedMin(undefined);
-                        } else if (event.type == 'mousemove' && p1) {
-                            const p2 = (chart.scales.x.getValueForPixel(event.x as number));
-                            // p1 and p2 should go into highlightedMin and highlightedMax
-                            if (p2 && p2 > p1) {
-                                setHighlightedMin(p1);
-                                setHighlightedMax(p2);
-                            } else {
-                                setHighlightedMin(p2);
-                                setHighlightedMax(p1);
-                            }
-
-                        } else if (event.type == 'mouseup') {
-                            lastMouseUp = Date.now();
-                            setP1(undefined);
-
-                            if(highlightedMin == highlightedMax) {
-                                console.log('clearing');
-                                $recordSelection.set(null);
-                                return;
-                            }
-
-                            // Find the us start and end of the highlighted region
-                            const usStart = records[highlightedMin as number].micros;
-                            const usEnd = records[highlightedMax as number].micros;
-
-                            // Find the indexes that correspond to this in the telemetryRecords array
-                            const startIndex = telemetryRecords.findIndex((record) => record.micros >= usStart);
-                            const endIndex = telemetryRecords.findIndex((record) => record.micros >= usEnd);
-                            
-                            $recordSelection.set({ start: telemetryRecords[startIndex].micros, end: telemetryRecords[endIndex].micros });
+                        if(event.type == 'mousedown') {
+                            mouseStartX = event.x;
+                            mouseStartY = event.y;
                         }
                     },
-                    // hover: {
-                    //     mode: "nearest",
-                    //     intersect: false,                        
-                    // },
+                    onClick: (event, chartElement, chart) => {
+                        if(mouseStartX == event.x && mouseStartY == event.y) {
+                            $recordSelection.set(null);
+                        }
+                    },
                     interaction: {
                         mode: 'index'
                     },
@@ -152,12 +108,39 @@ const LiftTimeline: React.FC = () => {
                             text: 'Climb Rate (m/s)'
                         },
                         annotation: {
-                            annotations: annotations
+                            annotations: recordedSelection ? [
+                                {
+                                    type: 'box',
+                                    xMin: recordedSelection.start,
+                                    xMax: recordedSelection.end,
+                                    backgroundColor: 'rgba(0, 255, 0, 0.4)',
+                                    borderColor: 'transparent',
+                                }
+                            ] : []
                         },
-
+                        zoom: {
+                            zoom: {
+                                drag: {
+                                    enabled: true,
+                                    backgroundColor: 'rgba(0, 255, 0, 0.5)',
+                                    borderColor: 'transparent',
+                                    
+                                },
+                                mode: 'x',
+                                onZoom: (event) => {
+                                    const chart = event.chart;
+                                    const { min: start, max: end } = chart.scales['x'];
+                                    $recordSelection.set({ start, end });
+                                    event.chart.resetZoom();
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
+                            type: 'linear',
+                            min: records[0]?.micros,
+                            max: records[records.length - 1]?.micros,
                             ticks: {
                                 display: false
                             },
@@ -166,10 +149,22 @@ const LiftTimeline: React.FC = () => {
                             }
                         },
                         y: {
+                            type: 'linear',
                             grid: {
                                 display: true,
                                 color: (context) => context.tick.value === 0 ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.1)',
                             }
+                        },
+                        yClimb: {
+                            type: 'linear',
+                            position: 'right',
+                            display: false,
+                            title: {
+                                display: false,
+                                text: 'Lifts',
+                            },
+                            min: 0,
+                            max: 1,
                         }
                     }
                 }}
