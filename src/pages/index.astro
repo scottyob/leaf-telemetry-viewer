@@ -11,12 +11,14 @@ import ClimbRateGraph from "../components/graphs/climbRate.tsx";
 import ImuAccel from "../components/graphs/imuAccel.tsx";
 import LiftModelSelector from "../components/liftModelSelector.tsx";
 import SaveButton from "../components/exportButton.tsx";
+
+import Logo from "../../public/logo.png";
 ---
 
 <Layout>
 	<!-- Top bar -->
 	<div class="banner pl-3 py-3 flex">
-		<img src="/logo.png" alt="Leaf Telemetry Logo" class="h-8" />
+		<img src={Logo.src} alt="Leaf Telemetry Logo" class="h-8" />
 		<h1 class="text-white text-2xl">Leaf Telemetry Viewer</h1>
 		<SaveButton client:only="react" as="csv" />
 		<SaveButton client:only="react" as="json" />
