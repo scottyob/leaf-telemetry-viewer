@@ -1,11 +1,78 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "../layouts/Layout.astro";
+import Load from "../components/load.tsx";
+import Section from "../components/section.tsx";
+import LiftTimeline from "../components/liftTimeline.tsx";
+import LiftTable from "../components/liftTable.tsx";
+import GpsAltitudeGraph from "../components/graphs/gps.tsx";
+import BaroAltitudeGraph from "../components/graphs/baroPressure.tsx";
+import ClimbRateGraph from "../components/graphs/climbRate.tsx";
+import ImuAccel from "../components/graphs/imuAccel.tsx";
 ---
 
 <Layout>
-	<Welcome />
+	<!-- Top bar -->
+	<div class="banner pl-3 py-3 flex items-center space-x-3">
+		<img src="/logo.png" alt="Leaf Telemetry Logo" class="h-8" />
+		<h1 class="text-white text-2xl">Leaf Telemetry Viewer</h1>
+		<Load client:only="react" />
+	</div>
+
+	<!-- Lift Events -->
+	 <div class="p-4">
+		<LiftTimeline client:only />
+		<!-- <Section client:load client:only title="Lift Events">
+			<LiftTable client:only="react" />
+		</Section> -->
+		<ClimbRateGraph client:only="react" />
+		<GpsAltitudeGraph client:only="react" />
+		<BaroAltitudeGraph client:only="react" />
+		<ImuAccel client:only="react" />
+	</div>
+
 </Layout>
+
+<style is:global>
+	.banner {
+		background-color: #27357a;
+	}
+
+	section {
+		border: gray 1px solid;
+		border-radius: 5px;
+		@apply m-2;
+	}
+
+	section h3 {
+		@apply p-1 bg-blue-300 text-base font-bold text-slate-600;
+	}
+
+	section main {
+		@apply p-2;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 0.75rem;
+	}
+
+	th, td {
+		padding: 0.25rem;
+		text-align: left;
+		border-bottom: 1px solid #ddd;
+	}
+
+	th {
+		background-color: #f4f4f4;
+		font-weight: bold;
+	}
+
+	tr:nth-child(even) {
+		background-color: #f9f9f9;
+	}
+
+	tr:hover {
+		background-color: #f1f1f1;
+	}
+</style>
