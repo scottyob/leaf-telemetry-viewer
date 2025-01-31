@@ -9,14 +9,14 @@ This is a work in progress, and the telemetry format has not yet been merged int
 
 ## Using
 
-Either fork this, and follow the instructions below to add additional computed fields, or use the hosted [Leaf Telemetry Viewer](https://leaf-telemetry-viewer.vercel.app/)
+Either fork this, and follow the instructions below to add additional computed fields, or use the hosted [Leaf Telemetry Viewer](https://scottyob.github.io/leaf-telemetry-viewer/)
 
 To get you started, you can use the [Demo Telemetry File](assets/demo_telemetry.dat) to get you started.
 
 Once you load in a telemetry file (button at the top), you'll be shown something like this:
 ![default hardware view](assets/hardware_climb_rate.png)
 
-You can click and drag on any of the graph to Zoom in
+You can click and drag on any of the graphs to Zoom in
 ![Zoom](assets/zoom.png)
 
 The red areas shown are a positive climb rate.  Some algorithms are better than *others*
@@ -114,7 +114,3 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
