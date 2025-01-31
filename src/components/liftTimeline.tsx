@@ -42,6 +42,7 @@ const LiftTimeline: React.FC = () => {
     const recordedSelection = useStore($recordSelection);
     const climbRateAttribute = useStore($climbRateAttribute);
 
+    //@ts-ignore
     const records = telemetryRecords.filter((record) => record[climbRateAttribute] !== undefined);
 
     // Single click on chart should clear zoom selection
@@ -57,7 +58,8 @@ const LiftTimeline: React.FC = () => {
                     datasets: [
                         {
                             data: records.map((record) => (
-                                { y: ((record[climbRateAttribute] as number) / 100), x: record.micros }
+                            //@ts-ignore
+                            { y: ((record[climbRateAttribute] as number) / 100), x: record.micros }
                             )),
                             pointRadius: 0,
                             borderColor: 'gray'

@@ -6,35 +6,42 @@ import LiftTimeline from "../components/liftTimeline.tsx";
 import LiftTable from "../components/liftTable.tsx";
 import GpsAltitudeGraph from "../components/graphs/gps.tsx";
 // import BaroRawPressureGraph from "../components/graphs/baroPressure.tsx";
-import BarroAltitudeGraph from "../components/graphs/baroAltitude.tsx"
+import BarroAltitudeGraph from "../components/graphs/baroAltitude.tsx";
 import ClimbRateGraph from "../components/graphs/climbRate.tsx";
 import ImuAccel from "../components/graphs/imuAccel.tsx";
 import LiftModelSelector from "../components/liftModelSelector.tsx";
+import SaveButton from "../components/exportButton.tsx";
 ---
 
 <Layout>
 	<!-- Top bar -->
-	<div class="banner pl-3 py-3 flex items-center space-x-3">
+	<div class="banner pl-3 py-3 flex">
 		<img src="/logo.png" alt="Leaf Telemetry Logo" class="h-8" />
 		<h1 class="text-white text-2xl">Leaf Telemetry Viewer</h1>
-		<Load client:only="react" />
+		<SaveButton client:only="react" as="csv" />
+		<SaveButton client:only="react" as="json" />
+		<div class="flex-grow text-right">
+			<Load client:only="react" />
+		</div>
 	</div>
 
 	<!-- Lift Events -->
-	 <div class="p-4">
+	<div class="p-4">
 		<LiftModelSelector client:only="react" />
 		<LiftTimeline client:only />
-		<!-- <Section client:load client:only title="Lift Events">
+
+		<div class="flex flex-col gap-10 pt-8">
+			<!-- <Section client:load client:only title="Lift Events">
 			<LiftTable client:only="react" />
 		</Section> -->
-		<ClimbRateGraph client:only="react" />
-		<GpsAltitudeGraph client:only="react" />
+			<ClimbRateGraph client:only="react" />
+			<GpsAltitudeGraph client:only="react" />
 
-		<!-- <BaroRawPressureGraph client:only="react" /> -->
-		<BarroAltitudeGraph client:only="react" />
-		<ImuAccel client:only="react" />
+			<!-- <BaroRawPressureGraph client:only="react" /> -->
+			<BarroAltitudeGraph client:only="react" />
+			<ImuAccel client:only="react" />
+		</div>
 	</div>
-
 </Layout>
 
 <style is:global>
@@ -62,7 +69,8 @@ import LiftModelSelector from "../components/liftModelSelector.tsx";
 		font-size: 0.75rem;
 	}
 
-	th, td {
+	th,
+	td {
 		padding: 0.25rem;
 		text-align: left;
 		border-bottom: 1px solid #ddd;
