@@ -15,7 +15,7 @@ export function DumbUnfilteredClimb(altitudeRecords: AdditionDataSource): Additi
     for (let i = 1; i < altitudeRecords.length; i++) {
         // Caluclate the climb rate in m/s, given filteredRecords has baroAltitude in cm
         // and a micros timestamp in microseconds
-        const climbRate = ((altitudeRecords[i].y) - (altitudeRecords[i - 1].y)) / (altitudeRecords[i].x - altitudeRecords[i - 1].x) * 100;
+        const climbRate = ((altitudeRecords[i].y) - (altitudeRecords[i - 1].y));
         ret.push({
             x: altitudeRecords[i].x,
             y: climbRate,

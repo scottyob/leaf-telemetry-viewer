@@ -33,7 +33,7 @@ export default function ClimbRateGraph() {
     const telemetryRecords = useStore($telemetryRecords);
     const liftRecords = useStore($liftRecords);
 
-    const records = telemetryRecords.filter((record) => record.climbRate !== undefined);
+    const records = telemetryRecords.filter((record) => record.dumbUnfilteredClimb !== undefined);
 
     return <div className='h-[200px]'>
         <Line
@@ -44,7 +44,7 @@ export default function ClimbRateGraph() {
                 datasets: [
                     {
                         label: 'Climb Rate',
-                        data: records.map((record) => ({x: record.micros, y: (record.climbRate as number) / 100})),
+                        data: records.map((record) => ({x: record.micros, y: (record.dumbUnfilteredClimb as number) / 100})),
                         borderColor: 'gray',
                     },
                     {

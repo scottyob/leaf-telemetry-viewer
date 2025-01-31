@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { $telemetryRecords, $liftRecords, $recordSelection, liftRecordsDataset } from '../stores/telemetryStore';
+import { $telemetryRecords, $liftRecords, $recordSelection, liftRecordsDataset, $climbRateAttribute } from '../stores/telemetryStore';
 
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -40,8 +40,9 @@ const LiftTimeline: React.FC = () => {
     const telemetryRecords = useStore($telemetryRecords);
     const liftRecords = useStore($liftRecords);
     const recordedSelection = useStore($recordSelection);
+    const climbRateAttribute = useStore($climbRateAttribute);
 
-    const records = telemetryRecords.filter((record) => record.climbRate !== undefined);
+    const records = telemetryRecords.filter((record) => record[climbRateAttribute] !== undefined);
 
     // Single click on chart should clear zoom selection
     let mouseStartX: number | null = null;
@@ -56,7 +57,7 @@ const LiftTimeline: React.FC = () => {
                     datasets: [
                         {
                             data: records.map((record) => (
-                                { y: ((record.climbRate as number) / 100), x: record.micros }
+                                { y: ((record[climbRateAttribute] as number) / 100), x: record.micros }
                             )),
                             pointRadius: 0,
                             borderColor: 'gray'

@@ -16,9 +16,12 @@ export const $telemetryRecords = atom<TelemetryRecord[]>([]);
 export const $liftRecords = atom<LiftPeriod[]>([]);
 export const $recordSelection = atom<RecordSelection | null>(null);
 
+// Attribute to use for showing the Climb Rate
+export const $climbRateAttribute = atom<string>('climbRate');
+
 // Returns a chartjs dataset to show lifty periods on a graph
 export function liftRecordsDataset(liftRecords: LiftPeriod[]) {
-    const liftyDataset: {x: number, y: number}[] = [];
+    const liftyDataset: { x: number, y: number }[] = [];
     liftRecords.forEach(lift => {
         liftyDataset.push({
             x: lift.start,
@@ -32,40 +35,53 @@ export function liftRecordsDataset(liftRecords: LiftPeriod[]) {
     return liftyDataset;
 }
 
-export function setTelemertryRecords(records: BaseTelemetryRecord[]) {
-    $telemetryRecords.set(GetTelemetry(records));
-    $recordSelection.set(null);
-
-    // Calculate lift periods
+function updateLiftPeriods() {
+    const allRecords = $telemetryRecords.get();
+    const climbRateAttribute = $climbRateAttribute.get() as keyof TelemetryRecord;;
+    
     const liftRecords: LiftPeriod[] = [];
     let currentLift: LiftPeriod | null = null;
 
-    for (let i = 0; i < records.length; i++) {
+    // Filter the records that have our attribute
+    const records = allRecords.filter(record => record[climbRateAttribute] != undefined);
+
+    for(let i = 1; i < records.length; i++) {
         const record = records[i];
+        const prevRecord = records[i - 1];
 
-        if(record.climbRate == undefined) {
+        const climbRate = record[climbRateAttribute] as number | undefined;
+
+        if (climbRate == undefined) {
             continue;
         }
 
-        // If we're not in a climb, and there's no lift in progress, skip
-        if(record.climbRate <= 0 && !currentLift) {
-            continue;
-        }
-
-        // If there's no lift in progress, start a new one
-        if(!currentLift) {
-            currentLift = { start: record.micros!, end: record.micros! };
-        }
-
-        // If we're no longer in a climb, end the lift record
-        if(record.climbRate <= 0) {
-            currentLift.end = record.micros;
+        if (climbRate > 0) {
+            if (!currentLift) {
+                currentLift = { start: prevRecord.micros!, end: record.micros! };
+            } else {
+                currentLift.end = record.micros;
+            }
+        } else if (currentLift) {
+            currentLift.end
             liftRecords.push(currentLift);
             currentLift = null;
         }
     }
 
-    // Update the store
+    if (currentLift) {
+        liftRecords.push(currentLift);
+    }
+
     $liftRecords.set(liftRecords);
 }
 
+export function setTelemertryRecords(records: BaseTelemetryRecord[]) {
+    $telemetryRecords.set(GetTelemetry(records));
+    $recordSelection.set(null);
+    updateLiftPeriods();
+}
+
+export function setClimbRateAttribute(attribute: string) {
+    $climbRateAttribute.set(attribute);
+    updateLiftPeriods();
+}

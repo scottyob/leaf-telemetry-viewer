@@ -9,6 +9,7 @@ import GpsAltitudeGraph from "../components/graphs/gps.tsx";
 import BarroAltitudeGraph from "../components/graphs/baroAltitude.tsx"
 import ClimbRateGraph from "../components/graphs/climbRate.tsx";
 import ImuAccel from "../components/graphs/imuAccel.tsx";
+import LiftModelSelector from "../components/liftModelSelector.tsx";
 ---
 
 <Layout>
@@ -21,6 +22,7 @@ import ImuAccel from "../components/graphs/imuAccel.tsx";
 
 	<!-- Lift Events -->
 	 <div class="p-4">
+		<LiftModelSelector client:only="react" />
 		<LiftTimeline client:only />
 		<!-- <Section client:load client:only title="Lift Events">
 			<LiftTable client:only="react" />
@@ -29,7 +31,7 @@ import ImuAccel from "../components/graphs/imuAccel.tsx";
 		<GpsAltitudeGraph client:only="react" />
 
 		<!-- <BaroRawPressureGraph client:only="react" /> -->
-		 <BarroAltitudeGraph client:only="react" />
+		<BarroAltitudeGraph client:only="react" />
 		<ImuAccel client:only="react" />
 	</div>
 
