@@ -1,5 +1,5 @@
 import { Line } from 'react-chartjs-2';
-import { $telemetryRecords, $liftRecords, $recordSelection, type LiftPeriod, liftRecordsDataset } from '../../store/telemetryStore';
+import { $telemetryRecords, $liftRecords, $recordSelection, type LiftPeriod, liftRecordsDataset } from '../../stores/telemetryStore';
 
 import {
     Chart as ChartJS,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { $liftRecords } from '../store/telemetryStore';
+import { $liftRecords } from '../stores/telemetryStore';
 import { useStore } from '@nanostores/react';
 
 export default function LiftTable() {

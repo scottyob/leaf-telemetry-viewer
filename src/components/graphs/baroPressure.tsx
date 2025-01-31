@@ -1,5 +1,5 @@
 import { Line } from 'react-chartjs-2';
-import { $telemetryRecords, $liftRecords, $recordSelection, type LiftPeriod, liftRecordsDataset } from '../../store/telemetryStore';
+import { $telemetryRecords, $liftRecords, $recordSelection, type LiftPeriod, liftRecordsDataset } from '../../stores/telemetryStore';
 
 import {
     Chart as ChartJS,
@@ -34,7 +34,7 @@ export default function BaroPressureGraph() {
     const telemetryRecords = useStore($telemetryRecords);
     const liftRecords = useStore($liftRecords);
 
-    const records = telemetryRecords.filter((record) => record.baroPressure?.d1 !== undefined);
+    const records = telemetryRecords.filter((record) => record.baroPressureRaw?.d1 !== undefined);
 
     return <div className='h-[200px]'>
         <Line
@@ -45,7 +45,7 @@ export default function BaroPressureGraph() {
                 datasets: [
                     {
                         label: 'Baro Pressure',
-                        data: records.map((record) => ({x: record.micros, y: record.baroPressure?.d1})),
+                        data: records.map((record) => ({x: record.micros, y: record.baroPressureRaw?.d1})),
                         borderColor: 'gray',
                     },
                     {

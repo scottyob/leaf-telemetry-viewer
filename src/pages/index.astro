@@ -5,7 +5,8 @@ import Section from "../components/section.tsx";
 import LiftTimeline from "../components/liftTimeline.tsx";
 import LiftTable from "../components/liftTable.tsx";
 import GpsAltitudeGraph from "../components/graphs/gps.tsx";
-import BaroAltitudeGraph from "../components/graphs/baroPressure.tsx";
+// import BaroRawPressureGraph from "../components/graphs/baroPressure.tsx";
+import BarroAltitudeGraph from "../components/graphs/baroAltitude.tsx"
 import ClimbRateGraph from "../components/graphs/climbRate.tsx";
 import ImuAccel from "../components/graphs/imuAccel.tsx";
 ---
@@ -26,7 +27,9 @@ import ImuAccel from "../components/graphs/imuAccel.tsx";
 		</Section> -->
 		<ClimbRateGraph client:only="react" />
 		<GpsAltitudeGraph client:only="react" />
-		<BaroAltitudeGraph client:only="react" />
+
+		<!-- <BaroRawPressureGraph client:only="react" /> -->
+		 <BarroAltitudeGraph client:only="react" />
 		<ImuAccel client:only="react" />
 	</div>
 

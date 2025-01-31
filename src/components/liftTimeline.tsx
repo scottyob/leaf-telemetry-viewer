@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '@nanostores/react';
-import { $telemetryRecords, $liftRecords, $recordSelection, liftRecordsDataset } from '../store/telemetryStore';
+import { $telemetryRecords, $liftRecords, $recordSelection, liftRecordsDataset } from '../stores/telemetryStore';
 
 import { Line } from 'react-chartjs-2';
 import annotationPlugin from 'chartjs-plugin-annotation';

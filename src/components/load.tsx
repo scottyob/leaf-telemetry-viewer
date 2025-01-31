@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { parseTelemetryRecords } from '../telemetry';
-import { setTelemertryRecords } from '../store/telemetryStore';
+import { setTelemertryRecords } from '../stores/telemetryStore';
 
 export default function LoadButton() {
     const fileInputRef = useRef<HTMLInputElement>(null);

@@ -15,6 +15,7 @@ import {
 import { useStore } from '@nanostores/react';
 import zoomPlugin from 'chartjs-plugin-zoom';
 
+
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -24,16 +25,16 @@ ChartJS.register(
     Tooltip,
     Legend,
     Filler,
-    zoomPlugin,
+    zoomPlugin
 );
 
 
-export default function GpsAltitudeGraph() {
+export default function BaroAltitudeGraph() {
     const selection = useStore($recordSelection);
     const telemetryRecords = useStore($telemetryRecords);
     const liftRecords = useStore($liftRecords);
 
-    const records = telemetryRecords.filter((record) => record.gpsPosition?.altitude !== undefined);
+    const records = telemetryRecords.filter((record) => record.baroAltitude);
 
     return <div className='h-[200px]'>
         <Line
@@ -43,8 +44,7 @@ export default function GpsAltitudeGraph() {
                 
                 datasets: [
                     {
-                        label: 'GPS Altitude',
-                        data: records.map((record) => ({x: record.micros, y: record.gpsPosition!.altitude})),
+                        data: records.map((record) => ({x: record.micros, y: record.baroAltitude})),
                         borderColor: 'gray',
                     },
                     {
@@ -75,10 +75,7 @@ export default function GpsAltitudeGraph() {
                     y: {
                         type: 'linear',
                         position: 'left',
-                        title: {
-                            display: true,
-                            text: 'Altitude',
-                        },
+
                     },
                     yClimb: {
                         type: 'linear',
@@ -97,7 +94,7 @@ export default function GpsAltitudeGraph() {
                         display: false,
                     },
                     title: {
-                        text: 'GPS Altitude',
+                        text: 'Baro Altitude (cm)',
                         display: true,
                     },
                     zoom: {
@@ -114,7 +111,6 @@ export default function GpsAltitudeGraph() {
                             }
                         }
                     }
-
                 },
             }}
         />

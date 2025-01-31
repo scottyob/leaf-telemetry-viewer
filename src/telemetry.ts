@@ -1,4 +1,4 @@
-export type TelemetryRecord = {
+export type BaseTelemetryRecord = {
     micros: number;
     gpsPosition?: {
         altitude: number;
@@ -9,7 +9,7 @@ export type TelemetryRecord = {
         temperature: number;
         humidity: number;
     };
-    baroPressure?: {
+    baroPressureRaw?: {
         d1: number;
     };
     baroTemp?: {
@@ -38,10 +38,10 @@ export type TelemetryRecord = {
     };
 };
 
-export function parseTelemetryRecords(buffer: ArrayBuffer): TelemetryRecord[] {
+export function parseTelemetryRecords(buffer: ArrayBuffer): BaseTelemetryRecord[] {
     const dataView = new DataView(buffer);
     let offset = 0;
-    const records: TelemetryRecord[] = [];
+    const records: BaseTelemetryRecord[] = [];
 
     const version = dataView.getUint32(offset, true);
     offset += 4;
@@ -50,7 +50,7 @@ export function parseTelemetryRecords(buffer: ArrayBuffer): TelemetryRecord[] {
         const payloadHeader = dataView.getUint32(offset, true);
         offset += 4;
 
-        const record: TelemetryRecord = { micros: 0 };
+        const record: BaseTelemetryRecord = { micros: 0 };
 
         if (payloadHeader & (1 << 0)) {
             record.micros = dataView.getUint32(offset, true);
@@ -75,7 +75,7 @@ export function parseTelemetryRecords(buffer: ArrayBuffer): TelemetryRecord[] {
         }
 
         if (payloadHeader & (1 << 3)) {
-            record.baroPressure = {
+            record.baroPressureRaw = {
                 d1: dataView.getInt32(offset, true),
             };
             offset += 4;

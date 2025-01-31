@@ -1,5 +1,6 @@
 import { atom } from 'nanostores';
-import type { TelemetryRecord } from '../telemetry';
+import type { BaseTelemetryRecord } from '../telemetry';
+import { GetTelemetry, type TelemetryRecord } from '../additionalTelemetry';
 
 export type LiftPeriod = {
     start: number;
@@ -31,8 +32,8 @@ export function liftRecordsDataset(liftRecords: LiftPeriod[]) {
     return liftyDataset;
 }
 
-export function setTelemertryRecords(records: TelemetryRecord[]) {
-    $telemetryRecords.set(records);
+export function setTelemertryRecords(records: BaseTelemetryRecord[]) {
+    $telemetryRecords.set(GetTelemetry(records));
     $recordSelection.set(null);
 
     // Calculate lift periods
