@@ -60,8 +60,8 @@ export function parseTelemetryRecords(buffer: ArrayBuffer): BaseTelemetryRecord[
         if (payloadHeader & (1 << 1)) {
             record.gpsPosition = {
                 altitude: dataView.getInt32(offset, true),
-                latitude: dataView.getFloat64(offset + 4, true),
-                longitude: dataView.getFloat64(offset + 12, true),
+                latitude: Number(dataView.getBigInt64(offset + 4, true)),
+                longitude: Number(dataView.getBigInt64(offset + 12, true)),
             };
             offset += 20;
         }
